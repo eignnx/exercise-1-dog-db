@@ -9,8 +9,7 @@
 void prompt(char *msg);
 void strip_ln(char *str);
 
-    unsigned char
-    pr_menu(void);           // Print menu
+unsigned char pr_menu(void); // Print menu
 void add_dog(int, off_t);    // Passed an fd and offset in file
 int del_dog(int, off_t);     // ditto; returns new fd
 void view_dog(int);          // Displays all dogs in DB
