@@ -7,7 +7,7 @@
 #define INP_BUF_SZ 100
 
 void prompt(char *msg);
-void strip_ln(char *str);
+void strip_nl(char *str);
 
 unsigned char pr_menu(void); // Print menu
 void add_dog(int, off_t);    // Passed an fd and offset in file
@@ -21,7 +21,7 @@ int main()
     
     prompt("Enter a command.");
     while (fgets(input, INP_BUF_SZ, stdin) != NULL) {
-        strip_ln(input);
+        strip_nl(input);
         
         printf(">> '%s'\n", input);
         
@@ -37,7 +37,7 @@ void prompt(char *msg)
     printf("=> ");
 }
 
-void strip_ln(char *str)
+void strip_nl(char *str)
 {
     size_t len = strlen(str);
     if (str[len - 1] == '\n')
