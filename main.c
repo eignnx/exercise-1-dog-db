@@ -26,6 +26,12 @@ int main()
     int bytes_read;
 
     int fd = open("database.dog", O_RDONLY);
+
+    if (fd == -1) {
+        perror("Could not find database.dog");
+        exit(-1);
+    }
+
     while ((bytes_read = read(fd, filebuf, RD_BUF_SZ)) != 0) {
         for (int i = 0; i < bytes_read; i++)
             putchar(filebuf[i]);
@@ -40,6 +46,8 @@ int main()
         
         prompt(NULL);
     }
+
+    exit(0);
 }
 
 void prompt(char *msg)
