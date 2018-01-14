@@ -7,6 +7,8 @@
 #include "my_utilities.h"
 #include "dog_entry.h"
 
+#define STDIN_FD 0
+
 #define INP_BUF_SZ 100
 #define IO_BUF_SZ 4096
 
@@ -173,7 +175,7 @@ void prompt(const char *msg)
     
     printf("%s", PROMPT);
 
-    read_line(stdin, input, INP_BUF_SZ);
+    read_line(STDIN_FD, input, INP_BUF_SZ);
 }
 
 // 
