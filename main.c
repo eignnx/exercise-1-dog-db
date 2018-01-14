@@ -18,6 +18,10 @@ void prompt(const char *msg);
 void strip_nl(char *str);
 
 void print_header(const char *);
+void print_error(const char *);
+
+void validate_fd(int, const char *);
+
 void dog_init_form(struct dog_entry *);
 
 unsigned char pr_menu(void); // Print menu
@@ -57,17 +61,28 @@ int main()
                 print_header("DOG TO BE ADDED");
                 print_dog(&current_dog);
 
-                int fd = open(DB_FILE_NAME, O_CREAT | O_WRONLY);
-                
-                if (fd < 0) {
-                    perror("Could not find/create db file");
-                    exit(-1);
+                char save;
+
+                while (1) {
+                    prompt("Would you like to save this record to disk? [Y/N]");
+                    save = toupper(input[0]);
+                    if (save == 'Y' | save == 'N')
+                        break;
+                    else
+                        print_error("Please enter a valid response [Y, N].");
                 }
 
-                lseek(fd, (off_t) 0, SEEK_END);
-                add_dog(fd, (off_t) 0);
+                if (save == 'Y') {
+                    int fd = open(DB_FILE_NAME, O_CREAT | O_WRONLY);
+                    validate_fd(fd, "Could not find/create db file");
+                    
+                    lseek(fd, (off_t) 0, SEEK_END);
+                    add_dog(fd, (off_t) 0);
+                    close(fd);
 
-                close(fd);
+                    print_header("RECORD SAVED");
+                } else 
+                    print_header("RECORD DISCARDED");
             }
                 break;
             case '2':
@@ -83,7 +98,7 @@ int main()
                 run = 0;
                 break;
             default:
-                printf("\nInvalid input!\n");
+                print_error("Invalid input!");
                 break;
         }
     }
@@ -94,6 +109,19 @@ int main()
 void print_header(const char *msg)
 {
     printf("\n\n-%s-\n\n", msg);
+}
+
+void print_error(const char *msg)
+{
+    printf("\nERROR: %s\n", msg);
+}
+
+void validate_fd(int fd, const char *msg)
+{
+    if (fd < 0) {
+        perror(msg);
+        exit(-1);
+    }
 }
 
 void dog_init_form(struct dog_entry *dp)
@@ -117,7 +145,7 @@ void dog_init_form(struct dog_entry *dp)
         if (val > 0)
             break;
         else
-            printf("\nERROR: Please enter a valid weight [1, 2, ...].\n");
+            print_error("Please enter a valid weight [1, 2, ...].");
     }
     dp->weight = val;
 
@@ -127,7 +155,7 @@ void dog_init_form(struct dog_entry *dp)
         if (val >= 0)
             break;
         else
-            printf("\nERROR: Please enter a valid age [0, 1, 2, ...].\n");
+            print_error("Please enter a valid age [0, 1, 2, ...].");
     }
     dp->age = val;
 
@@ -137,7 +165,7 @@ void dog_init_form(struct dog_entry *dp)
         if (val == 'M' || val == 'F')
             break;
         else
-            printf("\nERROR: Please enter a valid sex character [M or F].\n");
+            print_error("Please enter a valid sex character [M or F].");
     }
     dp->sex = (char) val;
 }
