@@ -20,8 +20,6 @@ void strip_nl(char *str);
 void print_header(const char *);
 void print_error(const char *);
 
-void validate_fd(int, const char *);
-
 void dog_init_form(struct dog_entry *);
 
 unsigned char pr_menu(void); // Print menu
@@ -58,7 +56,7 @@ int main()
         switch (pr_menu()) {
             case '1': {
                 dog_init_form(&current_dog);
-                print_header("DOG TO BE ADDED");
+                print_header("RECORD TO BE ADDED");
                 print_dog(&current_dog);
 
                 char save;
@@ -73,15 +71,18 @@ int main()
                 }
 
                 if (save == 'Y') {
-                    int fd = open(DB_FILE_NAME, O_CREAT | O_WRONLY);
-                    validate_fd(fd, "Could not find/create db file");
-                    
+                    int fd = safe_open(
+                        DB_FILE_NAME,
+                        O_CREAT | O_WRONLY,
+                        "Could not find/create db file"
+                    );
+
                     lseek(fd, (off_t) 0, SEEK_END);
                     add_dog(fd, (off_t) 0);
                     close(fd);
 
                     print_header("RECORD SAVED");
-                } else 
+                } else
                     print_header("RECORD DISCARDED");
             }
                 break;
@@ -113,15 +114,7 @@ void print_header(const char *msg)
 
 void print_error(const char *msg)
 {
-    printf("\nERROR: %s\n", msg);
-}
-
-void validate_fd(int fd, const char *msg)
-{
-    if (fd < 0) {
-        perror(msg);
-        exit(-1);
-    }
+    printf("\nERROR: %s\n\n", msg);
 }
 
 void dog_init_form(struct dog_entry *dp)
@@ -180,8 +173,7 @@ void prompt(const char *msg)
     
     printf("%s", PROMPT);
 
-    fgets(input, INP_BUF_SZ, stdin);
-    strip_nl(input);
+    read_line(stdin, input, INP_BUF_SZ);
 }
 
 // 
