@@ -43,7 +43,7 @@ size_t read_line(int fd, char *dest, size_t dest_cap)
             perror("Destination string out of space.");
             close(fd);
             exit(-1);
-        } else if (c = '\n') {
+        } else if (c == '\n') {
             *destp = '\0';
             return destp - dest;
         } else {
