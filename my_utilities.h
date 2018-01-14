@@ -2,20 +2,20 @@
     my_utilities.h
 */
 
-//#include <unistd.h>     // read write
+#include <unistd.h>     // read write
 #include <stdio.h>      // perror
 #include <fcntl.h>      // open
 
-int safe_open(char *, int);
+int safe_open(char *, int, const char *);
 void strip_nl(char *);
 size_t read_line(int, char *, size_t);
 
-int safe_open(char *fname, int flags)
+int safe_open(char *fname, int flags, const char *msg)
 {
     int fd = open(fname, flags);
 
     if (fd < 0) {
-        perror("Could not find database file");
+        perror(msg);
         exit(-1);
     }
 
