@@ -78,9 +78,16 @@ int main()
     exit(0);
 }
 
+void print_header(const char *msg)
+{
+    printf("\n\n-%s-\n\n", msg);
+}
+
 void dog_init_form(struct dog_entry *dp)
 {
     int val;
+
+    print_header("ADD DOG");
 
     prompt("Enter the dog's NAME.");
     strncpy((char *) &dp->name, (const char *) &input, SZ_NAME);
