@@ -30,22 +30,6 @@ void add_dog(int, off_t);    // Passed an fd and offset in file
 int del_dog(int, off_t);     // ditto; returns new fd
 void view_dog(int);          // Displays all dogs in DB
 
-unsigned char pr_menu()
-{
-    printf("\n");
-    printf("ENTER%5d %s\n", 1, "to add,");
-    printf("%10d %s\n", 2, "to change,");
-    printf("%10d %s\n", 3, "to delete,");
-    printf("%10d %s\n", 4, "to view,");
-    printf("%10d %s\n", 5, "to search,");
-    printf("%10d %s\n", 6, "to exit");
-    printf("%s", PROMPT);
-
-    char c = getchar();
-    getchar(); // Skip new line. 
-    return (unsigned char)c;
-}
-
 struct dog_entry current_dog;
 char input[INP_BUF_SZ];
 
@@ -109,6 +93,34 @@ int main()
     exit(0);
 }
 
+unsigned char pr_menu()
+{
+    printf("\n");
+    printf("ENTER%5d %s\n", 1, "to add,");
+    printf("%10d %s\n", 2, "to change,");
+    printf("%10d %s\n", 3, "to delete,");
+    printf("%10d %s\n", 4, "to view,");
+    printf("%10d %s\n", 5, "to search,");
+    printf("%10d %s\n", 6, "to exit");
+    prompt(NULL);
+
+    return (unsigned char)input[0];
+}
+
+//
+// Prompts the user with `msg`.
+// Stores input line in global `input` variable.
+void prompt(const char *msg)
+{
+    if (msg != NULL)
+        printf("%s\n", msg);
+
+    printf("%s", PROMPT);
+    printf("\n"); // Flush output somehow...
+
+    read_line(STDIN_FD, input, INP_BUF_SZ);
+}
+
 void print_header(const char *msg)
 {
     printf("\n\n-%s-\n\n", msg);
@@ -163,19 +175,6 @@ void dog_init_form(struct dog_entry *dp)
             print_error("Please enter a valid sex character [M or F].");
     }
     dp->sex = (char) val;
-}
-
-//
-// Prompts the user with `msg`.
-// Stores input line in global `input` variable.
-void prompt(const char *msg)
-{
-    if (msg != NULL)
-        printf("%s\n", msg);
-    
-    printf("%s", PROMPT);
-
-    read_line(STDIN_FD, input, INP_BUF_SZ);
 }
 
 // 
