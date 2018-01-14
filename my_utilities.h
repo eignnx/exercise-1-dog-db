@@ -50,4 +50,6 @@ size_t read_line(int fd, char *dest, size_t dest_cap)
             *destp = c;
             destp++;
         }
+    
+    return -1;
 }
