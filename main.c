@@ -8,15 +8,16 @@
 #include "dog_entry.h"
 
 #define INP_BUF_SZ 100
-#define RD_BUF_SZ 4096
+#define IO_BUF_SZ 4096
 
 #define DB_FILE_NAME "database.dog"
 
 #define PROMPT "ENTER: "
 
-void prompt(char *msg);
+void prompt(const char *msg);
 void strip_nl(char *str);
 
+void print_header(const char *);
 void dog_init_form(struct dog_entry *);
 
 unsigned char pr_menu(void); // Print menu
@@ -41,7 +42,7 @@ unsigned char pr_menu()
     return (unsigned char)c;
 }
 
-struct dog_entry *current_dog = NULL;
+struct dog_entry current_dog;
 char input[INP_BUF_SZ];
 
 int main()
@@ -52,9 +53,21 @@ int main()
         
         switch (pr_menu()) {
             case '1': {
-                struct dog_entry dog;
-                dog_init_form(&dog);
-                print_dog(&dog);
+                dog_init_form(&current_dog);
+                print_header("DOG TO BE ADDED");
+                print_dog(&current_dog);
+
+                int fd = open(DB_FILE_NAME, O_CREAT | O_WRONLY);
+                
+                if (fd < 0) {
+                    perror("Could not find/create db file");
+                    exit(-1);
+                }
+
+                lseek(fd, (off_t) 0, SEEK_END);
+                add_dog(fd, (off_t) 0);
+
+                close(fd);
             }
                 break;
             case '2':
@@ -132,7 +145,7 @@ void dog_init_form(struct dog_entry *dp)
 //
 // Prompts the user with `msg`.
 // Stores input line in global `input` variable.
-void prompt(char *msg)
+void prompt(const char *msg)
 {
     if (msg != NULL)
         printf("%s\n", msg);
@@ -151,11 +164,11 @@ off_t find_dog(int fd)
 {
     off_t rec_start = 0;
 
-    char filebuf[RD_BUF_SZ];
-    int bytes_read;
+    // char filebuf[IO_BUF_SZ];
+    // int bytes_read;
 
     // STUB!
-    // while ((bytes_read = read(fd, filebuf, RD_BUF_SZ)) != 0)
+    // while ((bytes_read = read(fd, filebuf, IO_BUF_SZ)) != 0)
     //     for (int i = 0; i < bytes_read; i++)
     //         putchar(filebuf[i]);
 
@@ -164,5 +177,19 @@ off_t find_dog(int fd)
 
 void add_dog(int fd, off_t cursor)
 {
+    char buf[IO_BUF_SZ];
+    // char *end = buf; // Try keeping track of end, write to disk once.
 
+    sprintf(buf, "%s\t", current_dog.name);
+    write(fd, buf, strlen(buf));
+    sprintf(buf, "%s\t", current_dog.breed);
+    write(fd, buf, strlen(buf));
+    sprintf(buf, "%s\t", current_dog.color);
+    write(fd, buf, strlen(buf));
+    sprintf(buf, "%d\t", current_dog.weight);
+    write(fd, buf, strlen(buf));
+    sprintf(buf, "%d\t", current_dog.age);
+    write(fd, buf, strlen(buf));
+    sprintf(buf, "%c\n", current_dog.sex);
+    write(fd, buf, strlen(buf));
 }

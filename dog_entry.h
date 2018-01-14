@@ -18,7 +18,7 @@ struct dog_entry
 
 void print_dog(struct dog_entry *dp)
 {
-    printf("\nDOG RECORD:\n");
+    printf("DOG RECORD:\n");
     printf("\tNAME:   %s\n", dp->name);
     printf("\tBREED:  %s\n", dp->breed);
     printf("\tCOLOR:  %s\n", dp->color);
