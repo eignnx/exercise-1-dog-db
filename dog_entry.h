@@ -18,10 +18,11 @@ struct dog_entry
 
 void print_dog(struct dog_entry *dp)
 {
-    printf("NAME:   %s\n", dp->name);
-    printf("BREED:  %s\n", dp->breed);
-    printf("COLOR:  %s\n", dp->color);
-    printf("WEIGHT: %d\n", dp->weight);
-    printf("AGE:    %d\n", dp->age);
-    printf("SEX:    %c\n", dp->sex);
+    printf("\nDOG RECORD:\n");
+    printf("\tNAME:   %s\n", dp->name);
+    printf("\tBREED:  %s\n", dp->breed);
+    printf("\tCOLOR:  %s\n", dp->color);
+    printf("\tWEIGHT: %d\n", dp->weight);
+    printf("\tAGE:    %d\n", dp->age);
+    printf("\tSEX:    %c\n", dp->sex);
 }
