@@ -36,11 +36,14 @@ char input[INP_BUF_SZ];
 int main()
 {
     int run = 1;
+    int fd;
 
     while (run) {
         
         switch (pr_menu()) {
-            case '1': {
+            case '1': { // Add dog.
+                print_header("ADD DOG RECORD");
+
                 dog_init_form(&current_dog);
                 print_header("RECORD TO BE ADDED");
                 print_dog(&current_dog);
@@ -57,7 +60,7 @@ int main()
                 }
 
                 if (save == 'Y') {
-                    int fd = safe_open(
+                    fd = safe_open(
                         DB_FILE_NAME,
                         O_CREAT | O_WRONLY,
                         "Could not find/create db file"
@@ -72,15 +75,38 @@ int main()
                     print_header("RECORD DISCARDED");
             }
                 break;
-            case '2':
+            case '2': // Change dog.
                 break;
-            case '3':
+            case '3': // Delete dog.
                 break;
-            case '4':
+            case '4': // View all dogs.
                 break;
-            case '5':
+            case '5': { // Search for a dog.
+                print_header("SEARCH FOR DOG RECORD");
+                prompt("Enter a dog's name to search for.");
+                strncpy(current_dog.name, input, SZ_NAME);
+
+                fd = safe_open(
+                    DB_FILE_NAME,
+                    O_RDONLY,
+                    "Could not find db file"
+                );
+
+                int loc = find_dog(fd);
+
+                if (loc < 0) {
+                    print_header("RECORD DOES NOT EXIST");
+                } else {
+                    print_header("RECORD FOUND");
+                    print_dog(&current_dog);
+
+                    DBG_NUM(loc);
+                }
+
+                close(fd);
+            }
                 break;
-            case '6':
+            case '6': // Exit program.
                 printf("\nExiting...\n");
                 run = 0;
                 break;
@@ -177,23 +203,41 @@ void dog_init_form(struct dog_entry *dp)
     dp->sex = (char) val;
 }
 
-// 
+#define MAX_REC_LN_LEN 100
+
 //
-//
-//
+// Finds the dog record in the DB that has the same name as
+// `current_dog`. Returns the offset into the DB file where
+// the found dog is located, or -1 if not found.
 off_t find_dog(int fd)
 {
-    off_t rec_start = 0;
+    off_t line_no = 0;
 
-    // char filebuf[IO_BUF_SZ];
-    // int bytes_read;
+    int found = 0;
 
-    // STUB!
-    // while ((bytes_read = read(fd, filebuf, IO_BUF_SZ)) != 0)
-    //     for (int i = 0; i < bytes_read; i++)
-    //         putchar(filebuf[i]);
+    char *d_name = current_dog.name;
 
-    return rec_start;
+    char line[MAX_REC_LN_LEN];
+    size_t line_len;
+
+    char *tokp;
+
+    do {
+        line_len = read_line(fd, line, MAX_REC_LN_LEN);
+        tokp = strtok(line, "\t");
+        
+        // DBG_STR(line);
+        // DBG_STR(tokp);
+
+        if (strncmp(tokp, d_name, strlen(d_name)) == 0) {
+            return line_no;
+        }
+
+        line_no++;
+
+    } while (!found && line_len > 0);
+
+    return -1;
 }
 
 void add_dog(int fd, off_t cursor)

@@ -6,6 +6,11 @@
 #include <stdio.h>      // perror
 #include <fcntl.h>      // open
 
+#define _DBG_(fmt_str, value) printf("[%s:%d: %s = " fmt_str "]\n", __FILE__, __LINE__, #value, value)
+#define DBG_STR(value) _DBG_("\"%s\"", value)
+#define DBG_NUM(value) _DBG_("%d", value)
+#define DBG_CHAR(value) _DBG_("'%c'", value)
+
 int safe_open(char *, int, const char *);
 void strip_nl(char *);
 size_t read_line(int, char *, size_t);
@@ -33,23 +38,27 @@ void strip_nl(char *str)
 // Returns the `strlen` of `dest` once finished.
 size_t read_line(int fd, char *dest, size_t dest_cap)
 {
-    char c;
+    int c;
 
     char *destp = dest;
     char *last = dest + dest_cap - 1; // Reserve space for null terminator.
 
-    while (read(fd, (void *) &c, 1) != 0)
+    while (read(fd, (void *) &c, 1) > 0) {
+        DBG_CHAR(c);
         if (destp > last) {
+            printf("[GONE BEYOND END OF STRING!]\n");
             perror("Destination string out of space.");
             close(fd);
             exit(-1);
-        } else if (c == '\n') {
+        } else if (c == '\n' || c == EOF) {
             *destp = '\0';
-            return destp - dest;
+            break;
         } else {
-            *destp = c;
+            *destp = (char) c;
             destp++;
         }
-    
-    return -1;
+    }
+
+    DBG_STR(dest);
+    return destp - dest;
 }
