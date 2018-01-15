@@ -2,8 +2,7 @@
     my_utilities.h
 */
 
-#include <unistd.h>     // read write
-#include <stdio.h>      // perror
+#include <stdio.h>      // printf, perror
 #include <fcntl.h>      // open
 
 #define _DBG_(fmt_str, value) printf("[%s:%d: %s = " fmt_str "]\n", __FILE__, __LINE__, #value, value)
@@ -32,33 +31,4 @@ void strip_nl(char *str)
     size_t len = strlen(str);
     if (str[len - 1] == '\n')
         str[len - 1] = '\0';
-}
-
-// Byte-by-byte reader of a single `\n` terminated line from `fd`.
-// Returns the `strlen` of `dest` once finished.
-size_t read_line(int fd, char *dest, size_t dest_cap)
-{
-    int c;
-
-    char *destp = dest;
-    char *last = dest + dest_cap - 1; // Reserve space for null terminator.
-
-    while (read(fd, (void *) &c, 1) > 0) {
-        DBG_CHAR(c);
-        if (destp > last) {
-            printf("[GONE BEYOND END OF STRING!]\n");
-            perror("Destination string out of space.");
-            close(fd);
-            exit(-1);
-        } else if (c == '\n' || c == EOF) {
-            *destp = '\0';
-            break;
-        } else {
-            *destp = (char) c;
-            destp++;
-        }
-    }
-
-    DBG_STR(dest);
-    return destp - dest;
 }
