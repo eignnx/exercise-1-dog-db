@@ -18,6 +18,7 @@
 #define PROMPT "ENTER: "
 
 void prompt(const char *msg);
+char prompt_yes_no(const char *msg);
 void strip_nl(char *str);
 
 void print_header(const char *);
@@ -201,13 +202,19 @@ void prompt(const char *msg)
     strip_nl(input);
 }
 
+#define FULL_MSG_SIZE 100
+//
+// Prompts the user for a yes/no response. Handles bad input.
+// Returns either char 'Y' or char 'N'.
 char prompt_yes_no(const char *msg)
 {
     int c;
-    strcat(msg, " [Y/N]");
+    char full_msg[FULL_MSG_SIZE];
+    strncpy(full_msg, msg, FULL_MSG_SIZE);
+    strncat(full_msg, " [Y/N]", FULL_MSG_SIZE);
 
     while (1) {
-        prompt(msg);
+        prompt((const char *)full_msg);
         c = toupper(input[0]);
         if (c == 'Y' | c == 'N')
             return (char) c;
