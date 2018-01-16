@@ -134,7 +134,19 @@ int main()
             case '3': // Delete dog.
                 break;
             
-            case '4': // View all dogs.
+            case '4': { // View all dogs.
+
+                int fd = safe_open(
+                    DB_FILE_NAME,
+                    O_CREAT | O_RDONLY,
+                    "Could not open DB file"
+                );
+
+                print_header("SHOWING ALL RECORDS IN DATABASE");
+
+                view_dog(fd);
+                close(fd);
+            }
                 break;
             
             case '5': { // Search for a dog.
@@ -297,4 +309,13 @@ void load_dog(int fd, off_t off)
 {
     lseek(fd, off, SEEK_SET);
     read(fd, (void *) &temp_dog, REC_SIZE);
+}
+
+//
+//
+// Displays all dog records in the DB.
+void view_dog(int fd)
+{
+    while (read(fd, (void *) &temp_dog, REC_SIZE) == REC_SIZE)
+        print_dog(&temp_dog);
 }
