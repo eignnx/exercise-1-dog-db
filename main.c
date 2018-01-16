@@ -131,7 +131,9 @@ int main()
             }
                 break;
             
-            case '3': // Delete dog.
+            case '3': {// Delete dog.
+                print_header("FEATURE NOT IMPLEMENTED");
+            }
                 break;
             
             case '4': { // View all dogs.
