@@ -292,6 +292,7 @@ off_t find_dog(int fd)
         else
             off += REC_SIZE;
 
+    strncpy(temp_dog.name, name, SZ_NAME); // So that search term can be referenced later
     return (off_t) -1;
 }
 
