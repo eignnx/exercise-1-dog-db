@@ -81,7 +81,52 @@ int main()
             }
                 break;
             
-            case '2': // Change dog.
+            case '2': { // Change dog.
+                prompt("Enter the NAME of the dog to be modified.");
+                strncpy(temp_dog.name, input, SZ_NAME);
+
+                int fd = safe_open(
+                    DB_FILE_NAME,
+                    O_RDWR | O_CREAT,
+                    "Could not open DB file"
+                );
+
+                off_t loc = find_dog(fd);
+            
+                if (loc < 0) {
+                    print_header("RECORD DOES NOT EXIST");
+                    printf("No dog named '%s' in database.", temp_dog.name);
+                } else {
+                    load_dog(fd, loc);
+
+                    print_header("CURRENT RECORD STORED");
+                    print_dog(&temp_dog);
+                    print_header("ENTER REPLACEMENT DATA");
+                    dog_init_form(&temp_dog);
+                    print_header("RECORD TO BE ADDED");
+                    print_dog(&temp_dog);
+                    prompt("Are you sure you want to overwrite previous data? [Y/N]");
+
+                    int save;
+                    while (1) {
+                        prompt("Would you like to save this record to disk? [Y/N]");
+                        save = toupper(input[0]);
+                        if (save == 'Y' | save == 'N')
+                            break;
+                        else
+                            print_error("Please enter a valid response [Y, N].");
+                    }
+
+                    if (save == 'Y') {
+                        lseek(fd, (off_t) 0, SEEK_SET);
+                        add_dog(fd, loc);
+                        print_header("RECORD SAVED");
+                    } else
+                        print_header("RECORD DISCARDED");
+                }
+
+                close(fd);
+            }
                 break;
             
             case '3': // Delete dog.
@@ -105,6 +150,7 @@ int main()
 
                 if (loc < 0) {
                     print_header("RECORD DOES NOT EXIST");
+                    printf("No dog named '%s' in database.", temp_dog.name);
                 } else {
                     print_header("RECORD FOUND");
                     load_dog(fd, loc);
