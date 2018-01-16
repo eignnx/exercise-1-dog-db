@@ -49,6 +49,8 @@ int main()
             case '1': { // Add dog.
                 print_header("ADD DOG RECORD");
 
+                print_header("ADD DOG");
+
                 dog_init_form(&temp_dog);
                 print_header("RECORD TO BE ADDED");
                 print_dog(&temp_dog);
@@ -219,8 +221,6 @@ void print_error(const char *msg)
 void dog_init_form(struct dog_entry *dp)
 {
     int val;
-
-    print_header("ADD DOG");
 
     prompt("Enter the dog's NAME.");
     strncpy((char *) dp->name, (const char *) input, SZ_NAME);
