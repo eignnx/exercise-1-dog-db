@@ -55,18 +55,9 @@ int main()
                 print_header("RECORD TO BE ADDED");
                 print_dog(&temp_dog);
 
-                char save;
+                char resp = prompt_yes_no("Would you like to save this record to disk?");
 
-                while (1) {
-                    prompt("Would you like to save this record to disk? [Y/N]");
-                    save = toupper(input[0]);
-                    if (save == 'Y' | save == 'N')
-                        break;
-                    else
-                        print_error("Please enter a valid response [Y, N].");
-                }
-
-                if (save == 'Y') {
+                if (resp == 'Y') {
                     fd = safe_open(
                         DB_FILE_NAME,
                         O_CREAT | O_WRONLY,
@@ -107,19 +98,10 @@ int main()
                     dog_init_form(&temp_dog);
                     print_header("RECORD TO BE ADDED");
                     print_dog(&temp_dog);
-                    prompt("Are you sure you want to overwrite previous data? [Y/N]");
 
-                    int save;
-                    while (1) {
-                        prompt("Would you like to save this record to disk? [Y/N]");
-                        save = toupper(input[0]);
-                        if (save == 'Y' | save == 'N')
-                            break;
-                        else
-                            print_error("Please enter a valid response [Y, N].");
-                    }
+                    char resp = prompt_yes_no("Are you sure you want to overwrite previous data?");
 
-                    if (save == 'Y') {
+                    if (resp == 'Y') {
                         lseek(fd, (off_t) 0, SEEK_SET);
                         add_dog(fd, loc);
                         print_header("RECORD SAVED");
@@ -217,6 +199,21 @@ void prompt(const char *msg)
 
     fgets(input, INP_BUF_SZ, stdin);
     strip_nl(input);
+}
+
+char prompt_yes_no(const char *msg)
+{
+    int c;
+    strcat(msg, " [Y/N]");
+
+    while (1) {
+        prompt(msg);
+        c = toupper(input[0]);
+        if (c == 'Y' | c == 'N')
+            return (char) c;
+        else
+            print_error("Please enter a valid response [Y or N].");
+    }
 }
 
 void print_header(const char *msg)
