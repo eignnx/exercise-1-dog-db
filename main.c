@@ -97,7 +97,7 @@ int main()
             
                 if (loc < 0) {
                     print_header("RECORD DOES NOT EXIST");
-                    printf("No dog named '%s' in database.", temp_dog.name);
+                    printf("No dog named '%s' in database.\n", temp_dog.name);
                 } else {
                     load_dog(fd, loc);
 
