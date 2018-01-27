@@ -17,6 +17,8 @@
 
 #define PROMPT "ENTER: "
 
+#define RW_PERM 0666
+
 void prompt(const char *msg);
 char prompt_yes_no(const char *msg);
 void strip_nl(char *str);
@@ -62,6 +64,7 @@ int main()
                     fd = safe_open(
                         DB_FILE_NAME,
                         O_CREAT | O_WRONLY,
+                        RW_PERM,
                         "Could not find/create db file"
                     );
 
@@ -82,6 +85,7 @@ int main()
                 int fd = safe_open(
                     DB_FILE_NAME,
                     O_RDWR | O_CREAT,
+                    RW_PERM,
                     "Could not open DB file"
                 );
 
@@ -124,6 +128,7 @@ int main()
                 int fd = safe_open(
                     DB_FILE_NAME,
                     O_CREAT | O_RDONLY,
+                    RW_PERM,
                     "Could not open DB file"
                 );
 
@@ -141,7 +146,8 @@ int main()
 
                 fd = safe_open(
                     DB_FILE_NAME,
-                    O_RDONLY,
+                    O_RDONLY | O_CREAT,
+                    RW_PERM,
                     "Could not find db file"
                 );
 

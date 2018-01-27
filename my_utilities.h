@@ -10,13 +10,15 @@
 #define DBG_NUM(value) _DBG_("%d", value)
 #define DBG_CHAR(value) _DBG_("'%c'", value)
 
-int safe_open(char *, int, const char *);
+int safe_open(char *, int, int, const char *);
 void strip_nl(char *);
 size_t read_line(int, char *, size_t);
 
-int safe_open(char *fname, int flags, const char *msg)
+// Permissions must be specified so that O_CREAT will not throw
+// you for a loop.
+int safe_open(char *fname, int flags, int permissions, const char *msg)
 {
-    int fd = open(fname, flags);
+    int fd = open(fname, flags, permissions);
 
     if (fd < 0) {
         perror(msg);
